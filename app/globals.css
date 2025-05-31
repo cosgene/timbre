@@ -47,6 +47,16 @@ body,
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-burgundy-950: #17090C;
+  --color-burgundy-900: #1F0C11;
+  --color-burgundy-800: #2A1017;
+  --color-burgundy-700: #2D1118;
+  --color-burgundy-600: #321319;
+  --color-burgundy-500: #661025;
+  --color-burgundy-400: #801336;
+  --color-burgundy-300: #A4243B;
+  --color-burgundy-200: #D9A5AC;
+  --color-burgundy-100: #F1DEE0;
 }
 
 :root {
