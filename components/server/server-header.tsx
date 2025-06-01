@@ -9,6 +9,7 @@ import {
     DropdownMenuSeparator, 
     DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { useModal } from "@/hooks/use-modal-store";
 
 interface ServerHeaderProps {
     server: { name: string }; // server with members with profiles
@@ -19,6 +20,8 @@ export const ServerHeader = ({
     server,
     role
 } : ServerHeaderProps) => {
+    const { onOpen } = useModal();
+
     const isAdmin = role === "ADMIN";
     const isModerator = isAdmin || role === "MODERATOR"; // TODO: maybe another type than a string
     return (
@@ -31,7 +34,9 @@ export const ServerHeader = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 text-xs font-medium text-black dark:text-neutral-300 dark:bg-burgundy-800 spaxce-y-[2px]">
                 {isModerator && (
-                    <DropdownMenuItem className="text-burgundy-300 px-3 py-2 text-sm cursor-pointer">
+                    <DropdownMenuItem 
+                    onClick={() => onOpen("invite", { server })}
+                    className="text-burgundy-300 px-3 py-2 text-sm cursor-pointer">
                         Пригласить людей
                         <UserPlus className="h-4 w-4 ml-auto"/>
                     </DropdownMenuItem>

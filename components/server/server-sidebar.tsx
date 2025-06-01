@@ -26,7 +26,7 @@ export const ServerSidebar = async ({
     // const role = server.members where member.profileId === profile.id role
 
     // для проверки
-    const server = { name: "testing" };
+    const server = { name: "testing@server-sidebar" };
     const role = "ADMIN";
 
     return (
