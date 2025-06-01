@@ -43,7 +43,6 @@ export const InviteModal = () => {
             // TODO: здесь логика изменения инвайт-кода и обновление модального окна
             // const response = await axios.patch(`/api/servers/${server?.id}/invite-code`);
             // onOpen("invite", { server: response.data });
-            console.log("Changed invite link.")
         } catch (error) {
             console.log(error);
         } finally {
