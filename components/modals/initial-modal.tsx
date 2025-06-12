@@ -24,14 +24,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "../file-upload";
 
+import axios from 'axios';
 
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Необходимо задать название сервера."
     }),
-    imageUrl: z.string().min(1, {
-        message: "Необходимо задать значок сервера."
-    })
+    // imageUrl: z.string().min(1, {
+    //     message: "Необходимо задать значок сервера."
+    // })
 });
 
 export const InitialModal = () => {
@@ -45,15 +46,22 @@ export const InitialModal = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            imageUrl: "",
+            //imageUrl: "",
         }
     });
 
     const isLoading = form.formState.isSubmitting;
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            const response = await axios.post("/api/servers", values);
+            console.log(response.data);
+        } catch(error) {
+            console.error('[Create Server (Initial Modal)] ', error);
+        }
+
         // TODO: здесь логика при отправке формы
-        console.log(values);
+        //console.log(values);
     }
 
     if (!isMounted) {
@@ -72,11 +80,13 @@ export const InitialModal = () => {
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+                                    console.log("Ошибки валидации:", errors); // Проверьте консоль
+                                    })} className="space-y-8">
                         <div className="space-y-8 px-6">
                             <div className="flex items-center justify-center text-center">
                                 {/* TODO: Загрузка изображения */}
-                                <FormField
+                                {/* <FormField
                                     control={form.control}
                                     name="imageUrl"
                                     render={({ field }) => (
@@ -90,8 +100,9 @@ export const InitialModal = () => {
                                             </FormControl>
                                         </FormItem>
                                     )}
-                                />
+                                /> */}
                             </div>
+
                             <FormField
                                 control={form.control}
                                 name="name"
@@ -118,7 +129,7 @@ export const InitialModal = () => {
                             />
                         </div>
                         <DialogFooter className="bg-gray-100 px-6 py-4">
-                            <Button variant="primary" disabled={isLoading}>
+                            <Button type='submit' variant="primary" disabled={isLoading}>
                                 Создать
                             </Button>
                         </DialogFooter>

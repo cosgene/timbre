@@ -25,14 +25,16 @@ import { Button } from "@/components/ui/button";
 import { FileUpload } from "../file-upload";
 import { useModal } from "@/hooks/use-modal-store";
 
+import axios from 'axios';
+
 
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Необходимо задать название сервера."
     }),
-    imageUrl: z.string().min(1, {
-        message: "Необходимо задать значок сервера."
-    })
+    // imageUrl: z.string().min(1, {
+    //     message: "Необходимо задать значок сервера."
+    // })
 });
 
 export const CreateServerModal = () => {
@@ -44,15 +46,22 @@ export const CreateServerModal = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            imageUrl: "",
+            //imageUrl: "",
         }
     });
 
     const isLoading = form.formState.isSubmitting;
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            const response = await axios.post("/api/servers", values);
+            console.log(response.data);
+        } catch(error) {
+            console.error('[Create Server (Create Server Modal)] ', error);
+        }
+
         // TODO: здесь логика при отправке формы
-        console.log(values);
+        // console.log(values);
         onClose();
     }
 
@@ -77,7 +86,7 @@ export const CreateServerModal = () => {
                         <div className="space-y-8 px-6">
                             <div className="flex items-center justify-center text-center">
                                 {/* TODO: Загрузка изображения */}
-                                <FormField
+                                {/* <FormField
                                     control={form.control}
                                     name="imageUrl"
                                     render={({ field }) => (
@@ -91,7 +100,7 @@ export const CreateServerModal = () => {
                                             </FormControl>
                                         </FormItem>
                                     )}
-                                />
+                                /> */}
                             </div>
                             <FormField
                                 control={form.control}
@@ -119,7 +128,7 @@ export const CreateServerModal = () => {
                             />
                         </div>
                         <DialogFooter className="bg-gray-100 px-6 py-4">
-                            <Button variant="primary" disabled={isLoading}>
+                            <Button type='submit' variant="primary" disabled={isLoading}>
                                 Создать
                             </Button>
                         </DialogFooter>

@@ -5,7 +5,18 @@ const nextConfig: NextConfig = {
     domains: [
       "encrypted-tbn0.gstatic.com"
     ]
-  }
+  },
+};
+
+module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:5207/api/:path*', // Перенаправление на ASP.NET
+      },
+    ];
+  },
 };
 
 export default nextConfig;

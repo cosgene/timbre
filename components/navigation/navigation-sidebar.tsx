@@ -7,6 +7,10 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { NavigationAction } from "./navigation-action";
 import { NavigationItem } from "./navigation-item";
 
+import { auth } from '@clerk/nextjs/server';
+
+import axios from 'axios';
+
 export const NavigationSidebar = async () => {
     // const profile = await currentProfile();
 
@@ -20,7 +24,26 @@ export const NavigationSidebar = async () => {
     // where profileId = profile.id
 
     // для проверки
-    const servers = [ {"id": "1", "name": "Testing", "imageUrl": "/"}, {"id": "2", "name": "Second", "imageUrl": "/"} ];
+    //const servers = [ {"id": "1", "name": "Testing", "imageUrl": "/"}, {"id": "2", "name": "Second", "imageUrl": "/"} ];
+
+    // TODO убрать получение серверов отсюдова и сделать чтобы можно было иницциировать 
+    // обновление списка извне (например при создании нового сервера список надо обновить)
+    
+    interface Server {
+        id: string,
+        name: string,
+        imageUrl: string
+    }
+
+    var servers: Server[] = [{"id": "0", "name": "Default Server", "imageUrl": "/"}];
+
+    try {
+        const serversReq = await axios.get<Server[]>("http://localhost:5207/api/servers");  // << запрос к просто "/api/servers" отсюда не работает почемуто я разберусь потом
+        servers = serversReq.data;
+        console.log(serversReq.data);
+    } catch (error) {
+        console.error("Get Servers List ", error);
+    }
 
     return (
         <div className="space-y-4 flex flex-col items-center h-full text-primary w-full dark:bg-burgundy-950 py-3">
