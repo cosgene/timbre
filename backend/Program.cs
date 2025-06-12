@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 FileStream passwordFile = File.Open("pass.txt", FileMode.Open);
 if (!passwordFile.CanRead)
 {
-    Console.WriteLine("Can't access file's contents \"pass.txt\" with database user password.");
+    Console.WriteLine("Can't access file's contents \"pass.txt\"");
     return;
 }
 
@@ -40,34 +40,11 @@ builder.Services.AddControllers();
 
 builder.Services.AddSignalR();
 
+builder.Services.AddScoped<IMessageService, MessageService>();
+
 
 // Остальные сервисы...
 var app = builder.Build();
-
-// var builder = WebApplication.CreateBuilder(args);
-
-// // Add services to the container.
-// builder.Services.AddRazorPages();
-
-// var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-// if (!app.Environment.IsDevelopment())
-// {
-//     app.UseExceptionHandler("/Error");
-//     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-//     app.UseHsts();
-// }
-
-// app.UseHttpsRedirection();
-
-// app.UseRouting();
-
-// app.UseAuthorization();
-
-// app.MapStaticAssets();
-// app.MapRazorPages()
-//    .WithStaticAssets();
 
 app.UseRouting();
 

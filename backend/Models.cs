@@ -37,3 +37,20 @@ public class Channel
     public ChannelType Type { get; set; }
     public Guid ServerId { get; set; }
 }
+
+public class CreateMessageRequest
+{
+    public Guid OwnerId { get; set; }
+    public Guid ServerId { get; set; }
+    public Guid ChannelId { get; set; }
+    public string Text { get; set; } = string.Empty;
+}
+
+public class Message
+{
+    public Guid Id { get; set; }
+    public Guid OwnerId { get; set; }
+    public Guid ServerId { get; set; }
+    public Guid ChannelId { get; set; }
+    public string Text { get; set; } = string.Empty;
+}

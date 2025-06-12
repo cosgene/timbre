@@ -8,15 +8,15 @@ const nextConfig: NextConfig = {
   },
 };
 
-module.exports = {
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:5207/api/:path*', // Перенаправление на ASP.NET
-      },
-    ];
-  },
-};
+// module.exports = {
+//   async rewrites() {
+//     return [
+//       {
+//         source: '/api/:path*',
+//         destination: 'http://localhost:5207/api/:path*', // Перенаправление на ASP.NET
+//       },
+//     ];
+//   },
+// };
 
 export default nextConfig;
