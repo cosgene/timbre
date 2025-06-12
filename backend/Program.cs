@@ -27,15 +27,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Разрешить все источники (для разработки)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("NextJsCors", policy => 
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:3000") // Адрес Next.js
+              .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowCredentials(); // Для SignalR
     });
 });
 
 builder.Services.AddControllers();
+
+builder.Services.AddSignalR();
+
 
 // Остальные сервисы...
 var app = builder.Build();
@@ -69,5 +73,7 @@ app.UseRouting();
 
 app.MapControllers();
 
-app.UseCors("AllowAll");
+app.MapHub<ChatHub>("/chatHub");
+
+app.UseCors("NextJsCors");
 app.Run();
