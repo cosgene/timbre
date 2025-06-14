@@ -6,6 +6,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Server> Servers { get; set; }
     public DbSet<Channel> Channels { get; set; }
+    public DbSet<Profile> Profiles { get; set; }
+    public DbSet<Member> Members { get; set; }
     public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
