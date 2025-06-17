@@ -1,8 +1,25 @@
 import { redirect } from "next/navigation";
+import { Hash, Mic, ShieldAlert, ShieldCheck } from "lucide-react";
+
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChannelType, MemberRole } from "@/lib/types";
+
 import { ServerHeader } from "./server-header";
+import { ServerSearch } from "./server-search";
 
 interface ServerSidebarProps {
     serverId: string;
+}
+
+const iconMap = {
+    [ChannelType.Text]: <Hash className="mr-2 h-4 w-4"/>,
+    [ChannelType.Voice]: <Mic className="mr-2 h-4 w-4"/>
+}
+
+const roleIconMap = {
+    [MemberRole.GUEST]: null,
+    [MemberRole.MODERATOR]: <ShieldCheck className="h-4 w-4 mr-2 text-burgundy-500"/>,
+    [MemberRole.ADMIN]: <ShieldAlert className="h-4 w-4 mr-2 text-rose-500"/>
 }
 
 export const ServerSidebar = async ({
@@ -26,8 +43,18 @@ export const ServerSidebar = async ({
     // const role = server.members where member.profileId === profile.id role
 
     // для проверки
+    const profile1 = {"id": "300", "name": "Profile 1 at Server Sidebar"}
+    const member1 = {"id": "200", "role": MemberRole.GUEST, "profile": profile1}
+    const profile2 = {"id": "301", "name": "Profile 2 at Server Sidebar"}
+    const member2 = {"id": "201", "role": MemberRole.MODERATOR, "profile": profile2}
     const server = { name: "testing@server-sidebar" };
+    const members = [member1, member2]
     const role = "ADMIN";
+
+    const channel1 = {"id": "100", "name": "Channel 1 at Server Sidebar", "type": ChannelType.Text};
+    const channel2 = {"id": "101", "name": "Channel 2 at Server Sidebar", "type": ChannelType.Voice};
+    const textChannels = [channel1];
+    const audioChannels = [channel2];
 
     return (
         <div className="flex flex-col h-full text-primary w-full dark:bg-burgundy-900 bg-zinc-100">
@@ -35,6 +62,39 @@ export const ServerSidebar = async ({
                 server={server}
                 role={role}
             />
+            <ScrollArea className="flex-1 px-3">
+                <div className="mt-2">
+                    <ServerSearch data={[
+                        {
+                            label: "Текстовые каналы",
+                            type: "channel",
+                            data: textChannels?.map((channel) => ({
+                                id: channel.id,
+                                name: channel.name,
+                                icon: iconMap[channel.type],
+                            }))
+                        },
+                        {
+                            label: "Голосовые каналы",
+                            type: "channel",
+                            data: audioChannels?.map((channel) => ({
+                                id: channel.id,
+                                name: channel.name,
+                                icon: iconMap[channel.type],
+                            }))
+                        },
+                        {
+                            label: "Участники",
+                            type: "member",
+                            data: members?.map((member) => ({
+                                id: member.id,
+                                name: member.profile.name,
+                                icon: roleIconMap[member.role],
+                            }))
+                        }
+                    ]}/>
+                </div>
+            </ScrollArea>
         </div>
     );
 }
