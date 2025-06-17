@@ -38,7 +38,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+                .AddMessagePackProtocol();
 
 builder.Services.AddScoped<IMessageService, MessageService>();
 
@@ -51,6 +52,7 @@ app.UseRouting();
 app.MapControllers();
 
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<VoiceHub>("/voiceHub");
 
 app.UseCors("NextJsCors");
 app.Run();
