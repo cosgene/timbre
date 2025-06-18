@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<Member> Members { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<Code> CodeSessions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
