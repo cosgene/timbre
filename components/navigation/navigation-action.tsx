@@ -19,9 +19,9 @@ export const NavigationAction = () => {
                 onClick={() => onOpen("createServer")}
                     className="group flex items-center"
                 >
-                    <div className="flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center bg-background dark:bg-burgundy-800 dark:group-hover:bg-burgundy-500">
+                    <div className="flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center bg-white group-hover:bg-burgundy-400 dark:bg-burgundy-800 dark:group-hover:bg-burgundy-500">
                         <Plus 
-                            className="group-hover:text-[#E6D6D6] transition text-burgundy-300"
+                            className="group-hover:text-white transition text-burgundy-300"
                             size={25}
                         />
                     </div>
