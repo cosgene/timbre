@@ -26,14 +26,17 @@ import { Button } from "@/components/ui/button";
 import { FileUpload } from "../file-upload";
 import { useModal } from "@/hooks/use-modal-store";
 
+import axios from 'axios';
+import { Server } from "@/lib/types";
+
 
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Необходимо задать название сервера."
     }),
-    imageUrl: z.string().min(1, {
-        message: "Необходимо задать значок сервера."
-    })
+    // imageUrl: z.string().min(1, {
+    //     message: "Необходимо задать значок сервера."
+    // })
 });
 
 export const EditServerModal = () => {
@@ -46,21 +49,29 @@ export const EditServerModal = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            imageUrl: "",
+            //imageUrl: "",
         }
     });
 
     useEffect(() => {
         if (server) {
             form.setValue("name", server.name);
-            form.setValue("imageUrl", server.imageUrl);
+            //form.setValue("imageUrl", server.imageUrl);
         }
     }, [server, form]);
 
     const isLoading = form.formState.isSubmitting;
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        // TODO: здесь логика при отправке формы
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        
+        try {
+            const request = {"name": values.name, "imageUrl": "/"};
+            const response = await axios.put(`http://localhost:5207/api/servers/${(server as Server).id}`, request);
+            console.log(response.data);
+        } catch(error) {
+            console.error('[Edit Server (Edit Server Modal)] ', error);
+        }
+
         console.log(values);
         onClose();
     }
@@ -86,7 +97,7 @@ export const EditServerModal = () => {
                         <div className="space-y-8 px-6">
                             <div className="flex items-center justify-center text-center">
                                 {/* TODO: Загрузка изображения */}
-                                <FormField
+                                {/* <FormField
                                     control={form.control}
                                     name="imageUrl"
                                     render={({ field }) => (
@@ -100,7 +111,7 @@ export const EditServerModal = () => {
                                             </FormControl>
                                         </FormItem>
                                     )}
-                                />
+                                /> */}
                             </div>
                             <FormField
                                 control={form.control}
@@ -128,7 +139,7 @@ export const EditServerModal = () => {
                             />
                         </div>
                         <DialogFooter className="bg-gray-100 px-6 py-4">
-                            <Button variant="primary" disabled={isLoading}>
+                            <Button type='submit' variant="primary" disabled={isLoading}>
                                 Сохранить
                             </Button>
                         </DialogFooter>

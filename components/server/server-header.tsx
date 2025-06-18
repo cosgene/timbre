@@ -10,9 +10,10 @@ import {
     DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { useModal } from "@/hooks/use-modal-store";
+import { MemberRole, Server } from "@/lib/types";
 
 interface ServerHeaderProps {
-    server: { name: string }; // server with members with profiles
+    server: Server; // server with members with profiles
     role?: string; // memberrole
 }
 
@@ -22,8 +23,8 @@ export const ServerHeader = ({
 } : ServerHeaderProps) => {
     const { onOpen } = useModal();
 
-    const isAdmin = role === "ADMIN";
-    const isModerator = isAdmin || role === "MODERATOR"; // TODO: maybe another type than a string
+    const isAdmin = role === MemberRole.ADMIN;
+    const isModerator = isAdmin || role === MemberRole.MODERATOR; // TODO: maybe another type than a string
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="focus:outline-none" asChild>
@@ -63,7 +64,7 @@ export const ServerHeader = ({
                 {isModerator && (
                     <DropdownMenuItem 
                         className="px-3 py-2 text-sm cursor-pointer"
-                        onClick={() => onOpen("createChannel")}
+                        onClick={() => onOpen("createChannel", {server})}
                     >
                         Создать канал
                         <PlusCircle className="h-4 w-4 ml-auto"/>

@@ -26,7 +26,9 @@ import { FileUpload } from "../file-upload";
 import { useModal } from "@/hooks/use-modal-store";
 
 import axios from 'axios';
-
+//import { initialProfile } from "@/lib/initial-profile";
+import { useInitialProfile } from "@/lib/use-initial-profile";
+import { Profile } from "@/lib/types";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -39,6 +41,7 @@ const formSchema = z.object({
 
 export const CreateServerModal = () => {
     const { isOpen, onClose, type } = useModal();
+    const { profile, loading: profileLoading } = useInitialProfile();
     
     const isModalOpen = isOpen && type === "createServer";
 
@@ -53,8 +56,10 @@ export const CreateServerModal = () => {
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        if(profileLoading || !profile) return;
         try {
-            const response = await axios.post("http://localhost:5207/api/servers", values);
+            const request = {"name": values.name, "userId": (profile as Profile).id}
+            const response = await axios.post("http://localhost:5207/api/servers", request);
             console.log(response.data);
         } catch(error) {
             console.error('[Create Server (Create Server Modal)] ', error);

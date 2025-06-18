@@ -10,6 +10,9 @@ import { NavigationItem } from "./navigation-item";
 import { auth } from '@clerk/nextjs/server';
 
 import axios from 'axios';
+import { initialProfile } from "@/lib/initial-profile.server";
+import { Profile, Server } from "@/lib/types";
+import { timeStamp } from "console";
 
 export const NavigationSidebar = async () => {
     // const profile = await currentProfile();
@@ -28,22 +31,20 @@ export const NavigationSidebar = async () => {
 
     // TODO убрать получение серверов отсюдова и сделать чтобы можно было иницциировать 
     // обновление списка извне (например при создании нового сервера список надо обновить)
+
+    //var servers: Server[] = [{"id": "0", "name": "Default Server", "imageUrl": "/", "inviteCode": "", "profileId": "", "profile": null,}];
     
-    interface Server {
-        id: string,
-        name: string,
-        imageUrl: string
-    }
+    const profile = await initialProfile();
+    var servers: Server[] = profile.servers;
+    console.log(servers);
 
-    var servers: Server[] = [{"id": "0", "name": "Default Server", "imageUrl": "/"}];
-
-    try {
-        const serversReq = await axios.get<Server[]>("http://localhost:5207/api/servers");  // << запрос к просто "/api/servers" отсюда не работает почемуто я разберусь потом
-        servers = serversReq.data;
-        console.log(serversReq.data);
-    } catch (error) {
-        console.error("Get Servers List ", error);
-    }
+    // try {
+    //     const serversReq = await axios.get<Server[]>("http://localhost:5207/api/servers");
+    //     servers = serversReq.data;
+    //     console.log(serversReq.data);
+    // } catch (error) {
+    //     console.error("Get Servers List ", error);
+    // }
 
     return (
         <div className="space-y-4 flex flex-col items-center h-full text-primary w-full dark:bg-burgundy-950 py-3">

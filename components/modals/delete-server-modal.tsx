@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 
 import { useModal } from "@/hooks/use-modal-store";
 
+import axios from 'axios';
+import { Server } from "@/lib/types";
+
 export const DeleteServerModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
@@ -27,7 +30,8 @@ export const DeleteServerModal = () => {
     const onClick = async () => {
         try {
             setIsLoading(true);
-            // TODO: axios delete запрос на удаление сервера с id = server.id
+            
+            axios.delete(`http://localhost:5207/api/servers/${(server as Server).id}`);
             onClose();
             router.refresh();
             router.push("/");

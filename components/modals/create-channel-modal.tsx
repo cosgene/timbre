@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
-import { ChannelType } from "@/lib/types";
+import { ChannelType, Profile, Server } from "@/lib/types";
 
 import {
     Dialog,
@@ -33,6 +33,7 @@ import {
 
 
 import axios from 'axios';
+import { useInitialProfile } from "@/lib/use-initial-profile";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -47,7 +48,10 @@ const formSchema = z.object({
 });
 
 export const CreateChannelModal = () => {
-    const { isOpen, onClose, type } = useModal();
+    const { isOpen, onClose, type, data } = useModal();
+    const { profile, loading: profileLoading } = useInitialProfile();
+
+    const {server} = data;
     
     const isModalOpen = isOpen && type === "createChannel";
 
@@ -62,12 +66,16 @@ export const CreateChannelModal = () => {
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        // try {
-        //     const response = await axios.post("http://localhost:5207/api/servers", values);
-        //     console.log(response.data);
-        // } catch(error) {
-        //     console.error('[Create Server (Create Server Modal)] ', error);
-        // }
+        if(profileLoading || !profile) return;
+
+        try {
+            const request = {name: values.name, serverId: (server as Server).id, profileId: (profile as Profile).id, type: values.type}  // АААААЫФВВЖЖЖЖЖЖЖЖЖЖЖ
+            const url = `http://localhost:5207/api/servers/${(server as Server).id}/channels`
+            const response = await axios.post(url, request);
+            console.log(response.data);
+        } catch(error) {
+            console.error('[Create Channel (Create Channel Modal)] ', error);
+        }
 
         // TODO: здесь логика при отправке формы
         console.log(values);

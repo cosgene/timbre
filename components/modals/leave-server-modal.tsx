@@ -15,7 +15,12 @@ import { Button } from "@/components/ui/button";
 
 import { useModal } from "@/hooks/use-modal-store";
 
+import axios from 'axios';
+import { useInitialProfile } from "@/lib/use-initial-profile";
+import { Profile, Server } from "@/lib/types";
+
 export const LeaveServerModal = () => {
+    const { profile, loading: profileLoading } = useInitialProfile();
     const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
     
@@ -25,9 +30,18 @@ export const LeaveServerModal = () => {
     const [ isLoading, setIsLoading ] = useState(false);
 
     const onClick = async () => {
+        if(profileLoading || !profile) return;
+
         try {
             setIsLoading(true);
-            // TODO: axios patch запрос на удаление пользователя с сервера с id = server.id
+            
+            try {
+                const response = await axios.post(`http://localhost:5207/api/servers/${(server as Server).id}/leave/${(profile as Profile).id}`);
+                console.log(response.data);
+            } catch(error) {
+                console.error('[Leave Server (Leave Server Modal)] ', error);
+            }
+
             onClose();
             router.refresh();
             router.push("/");

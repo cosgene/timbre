@@ -1,7 +1,15 @@
+public class CreateProfileRequest
+{
+    public string ClerkId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string ImageURL { get; set; } = "/";
+    public string Email { get; set; } = string.Empty;
+}
+
 public class Profile
 {
     public Guid Id { get; set; }
-    public Guid UserId { get; set; }
+    public string UserId { get; set; } = string.Empty;  // Clerk ID
     public string Name { get; set; } = string.Empty;
     public string ImageURL { get; set; } = "/";
     public string Email { get; set; } = string.Empty;
@@ -23,7 +31,8 @@ public enum MemberRole {
 public class Member
 {
     public Guid Id { get; set; }
-    public MemberRole Role { get; set; } = MemberRole.GUEST;
+    public string Role { get; set; } = "Гость";
+    public required Profile Profile { get; set; }
     public Guid ProfileId { get; set; }
     public Guid ServerId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -36,6 +45,14 @@ public class ChannelRequest
     public ChannelType Type { get; set; }
 }
 
+public class CreateChannelRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string Type { get; set; } = "Текстовый";
+    public Guid ProfileId { get; set; }
+    public Guid ServerId { get; set; }
+}
+
 public enum ChannelType
 {
     Text,
@@ -46,7 +63,7 @@ public class Channel
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public ChannelType Type { get; set; }
+    public string Type { get; set; } = "Текстовый";
     public Guid ProfileId { get; set; }
     public Guid ServerId { get; set; }
 
@@ -74,6 +91,12 @@ public class Server
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public List<Channel> Channels { get; set; } = new();
     public List<Member> Members { get; set; } = new();
+}
+
+public class EditServerRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
 }
 
 public class CreateMessageRequest

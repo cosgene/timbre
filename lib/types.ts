@@ -3,6 +3,11 @@ export enum ChannelType {
     Voice = "Голосовой"
 }
 
+export const ChannelTypeByIndex = [ChannelType.Text, ChannelType.Voice];
+export const ChannelTypeToValue = (type: ChannelType): number => {
+    return type === ChannelType.Text ? 0 : 1;
+};
+
 export enum MemberRole {
     ADMIN = "Админ",
     MODERATOR = "Модератор",
