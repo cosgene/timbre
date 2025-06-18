@@ -62,9 +62,9 @@ export const ServerSearch = ({
                 className="group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
                 onClick={() => setOpen(true)}
             >
-                <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400"/>
+                <Search className="w-4 h-4 text-zinc-500 dark:text-burgundy-200"/>
                 <p
-                    className="font-semibold text-sm text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition"
+                    className="font-semibold text-sm text-zinc-500 dark:text-burgundy-200 group-hover:text-zinc-600 dark:group-hover:text-burgundy-100 transition"
                 >
                     Поиск
                 </p>
