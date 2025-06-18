@@ -58,6 +58,7 @@ app.MapControllers();
 
 app.MapHub<ChatHub>("/chatHub");
 app.MapHub<VoiceHub>("/voiceHub");
+app.MapHub<CodeHub>("/codeHub");
 
 app.UseCors("NextJsCors");
 app.Run();

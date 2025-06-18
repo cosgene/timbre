@@ -115,3 +115,19 @@ public class Message
     public Guid ChannelId { get; set; }
     public string Text { get; set; } = string.Empty;
 }
+
+public class CreateCodeRequest
+{
+    public Guid ServerId { get; set; }
+    public Guid ChannelId { get; set; }
+    public string Text { get; set; } = string.Empty;
+    public string Language { get; set; } = "typescript";
+}
+public class Code
+{
+    public Guid Id { get; set; }
+    public Guid ServerId { get; set; }
+    public Guid ChannelId { get; set; }
+    public string Text { get; set; } = string.Empty;
+    public string Language { get; set; } = "typescript";
+}
