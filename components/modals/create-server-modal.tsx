@@ -29,6 +29,7 @@ import axios from 'axios';
 //import { initialProfile } from "@/lib/initial-profile";
 import { useInitialProfile } from "@/lib/use-initial-profile";
 import { Profile } from "@/lib/types";
+import { redirect } from "next/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -61,6 +62,7 @@ export const CreateServerModal = () => {
             const request = {"name": values.name, "userId": (profile as Profile).id}
             const response = await axios.post("http://localhost:5207/api/servers", request);
             console.log(response.data);
+            redirect(`/servers/${response.data.id}`);
         } catch(error) {
             console.error('[Create Server (Create Server Modal)] ', error);
         }

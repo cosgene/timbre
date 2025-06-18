@@ -4,6 +4,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+
 import {
     Dialog,
     DialogContent,
@@ -25,6 +26,9 @@ import { Button } from "@/components/ui/button";
 import { FileUpload } from "../file-upload";
 
 import axios from 'axios';
+import { useInitialProfile } from "@/lib/use-initial-profile";
+import { Profile } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -37,6 +41,8 @@ const formSchema = z.object({
 
 export const InitialModal = () => {
     const [isMounted, setIsMounted] = useState(false);
+    const { profile, loading: profileLoading } = useInitialProfile();
+    const router = useRouter();
 
     useEffect(() => {
         setIsMounted(true);
@@ -53,15 +59,17 @@ export const InitialModal = () => {
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        if (profileLoading || !profile) return;
         try {
-            const response = await axios.post("http://localhost:5207/api/servers", values);
+            const request = {"name": values.name, "userId": (profile as Profile).id}
+            const response = await axios.post("http://localhost:5207/api/servers", request);
             console.log(response.data);
+            form.reset();
+            router.refresh();
+            window.location.reload();
         } catch(error) {
             console.error('[Create Server (Initial Modal)] ', error);
         }
-
-        // TODO: здесь логика при отправке формы
-        //console.log(values);
     }
 
     if (!isMounted) {
