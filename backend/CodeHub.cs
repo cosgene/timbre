@@ -65,7 +65,7 @@ public class CodeHub : Hub
 
         return Task.FromResult(new List<string>());
     }
-    
+
     public async Task RequestSyncCode(string serverId, string channelId)
     {
         // Отправить одному из других участников запрос
@@ -77,9 +77,15 @@ public class CodeHub : Hub
         }
     }
 
-    public async Task SendFullCodeTo(string connectionId, string code)
+    public async Task SendFullCodeTo(string connectionId, string code, string language)
     {
-        await Clients.Client(connectionId).SendAsync("ReceiveSyncCode", code);
+        await Clients.Client(connectionId).SendAsync("ReceiveSyncCode", code, language);
     }
+    
+    public async Task SendLanguageChange(string serverId, string channelId, string language)
+    {
+        await Clients.OthersInGroup(serverId + "/" + channelId).SendAsync("ReceiveLanguageChange", language);
+    }
+
 
 }

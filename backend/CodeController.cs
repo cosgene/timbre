@@ -21,8 +21,8 @@ public class CodeController : ControllerBase
                     .FirstOrDefault(s => s.ServerId == request.ServerId && s.ChannelId == request.ChannelId);
         if (code != null)
         {
-            Console.WriteLine("====== updating code, got text: " + request.Text);
             code.Text = request.Text;
+            code.Language = request.Language;
 
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCode), new { id = code.Id }, code);
@@ -38,6 +38,7 @@ public class CodeController : ControllerBase
                 ServerId = request.ServerId,
                 ChannelId = request.ChannelId,
                 Text = request.Text,
+                Language = request.Language
             };
 
             // Сохранение в БД

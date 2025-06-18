@@ -25,16 +25,38 @@ type CodeChange = {
 
 type SaveStatus = 'saved' | 'saving' | 'error' | null;
 
+const LANGUAGES = [
+  { label: 'TypeScript', value: 'typescript' },
+  { label: 'JavaScript', value: 'javascript' },
+  { label: 'Python', value: 'python' },
+  { label: 'C#', value: 'csharp' },
+  { label: 'Java', value: 'java' },
+  { label: 'HTML', value: 'html' },
+  { label: "C", value: 'c'},
+  { label: "C++", value: 'cpp'}
+];
+
+
 export default function CodeSessionEditor({serverId = '0', channelId = '0'}) {
   const [connected, setConnected] = useState(false);
   //const [sessionId, setSessionId] = useState('');
   const connectionRef = useRef<signalR.HubConnection | null>(null);
   const editorRef = useRef<import('monaco-editor').editor.IStandaloneCodeEditor | null>(null);
-  const pendingCodeRef = useRef<string | null>(null);
+  const pendingCodeRef = useRef<{code: string, language: string} | null>(null);
   // Флаг, чтобы не зациклить обновления при programmatic setValue
   const suppressRef = useRef(false);
   const monacoRef = useRef<typeof monacoType | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>(null);
+  const [language, setLanguage] = useState('typescript');
+  const languageRef = useRef(language);
+
+  // Синхронизация языка с другими участниками
+  const handleLanguageChange = async (lang: string) => {
+    setLanguage(lang);
+    if (connectionRef.current) {
+      await connectionRef.current.invoke('SendLanguageChange', serverId, channelId, lang);
+    }
+  };
 
   // Автосохранение каждые 30 сек
   useEffect(() => {
@@ -44,6 +66,18 @@ export default function CodeSessionEditor({serverId = '0', channelId = '0'}) {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    languageRef.current = language;
+    const editor = editorRef.current;
+    const monaco = monacoRef.current;
+    if (editor && monaco) {
+      const model = editor.getModel();
+      if (model) {
+        monaco.editor.setModelLanguage(model, language);
+      }
+    }
+  }, [language]);
 
   const handleBeforeMount = (monaco: typeof monacoType) => {
     monacoRef.current = monaco;
@@ -102,9 +136,14 @@ export default function CodeSessionEditor({serverId = '0', channelId = '0'}) {
         axios.get(`http://localhost:5207/api/code/fromServer/${serverId}/${channelId}`)
           .then(res => {
             const editor = editorRef.current;
-            console.log("got code from server, code = ", res.data.text);
-            if (editor) editor.setValue(res.data.text);
-            else pendingCodeRef.current = res.data.text;
+            if (editor) {
+              editor.setValue(res.data.text);
+              setLanguage(res.data.language);
+            }
+            else {
+              var huinya : {code: string, language: string} = {code: res.data.text as string, language: res.data.language as string};
+              pendingCodeRef.current = huinya;
+            }
           });
       } else {
         // Я не первый → прошу синхронизацию у других
@@ -114,13 +153,23 @@ export default function CodeSessionEditor({serverId = '0', channelId = '0'}) {
 
       connection.on("SyncCodeTo", (requesterConnectionId: string) => {
         const code = editorRef.current?.getValue();
-        connection.invoke("SendFullCodeTo", requesterConnectionId, code);
+        connection.invoke("SendFullCodeTo", requesterConnectionId, code, languageRef.current);
       });
 
-      connection.on("ReceiveSyncCode", (code: string) => {
+      connection.on("ReceiveSyncCode", (gotCode: string, gotLanguage: string) => {
         const editor = editorRef.current;
-        if (editor) editor.setValue(code);
-        else pendingCodeRef.current = code;
+        if (editor) {
+          editor.setValue(gotCode);
+          setLanguage(gotLanguage);
+        }
+        else {
+          var huinya : {code: string, language: string} = {code: gotCode, language: gotLanguage};
+          pendingCodeRef.current = huinya;
+        }
+      });
+
+      connection.on("ReceiveLanguageChange", (lang: string) => {
+        setLanguage(lang);
       });
 
 
@@ -144,7 +193,9 @@ export default function CodeSessionEditor({serverId = '0', channelId = '0'}) {
     editorRef.current = editor;
 
     if (pendingCodeRef.current !== null) {
-      editor.setValue(pendingCodeRef.current);
+      console.log("pending ", pendingCodeRef.current);
+      editor.setValue(pendingCodeRef.current.code);
+      setLanguage(pendingCodeRef.current.language);
       pendingCodeRef.current = null;
     }
 
@@ -178,7 +229,8 @@ export default function CodeSessionEditor({serverId = '0', channelId = '0'}) {
       await axios.post('http://localhost:5207/api/code/save', {
         serverId,
         channelId,
-        text: code
+        text: code,
+        language
       });
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus(null), 3000);
@@ -212,17 +264,32 @@ export default function CodeSessionEditor({serverId = '0', channelId = '0'}) {
         
         <div className="flex flex-col h-screen">
           <div className="p-2 flex items-center gap-4 bg-gray-900 text-white">
-            <button onClick={handleSave} className="bg-blue-600 px-4 py-1 rounded hover:bg-blue-700">
-              💾 Сохранить
-            </button>
-            {saveStatus === 'saving' && <span className="text-yellow-400">Сохраняется...</span>}
-            {saveStatus === 'saved' && <span className="text-green-400">Сохранено ✅</span>}
-            {saveStatus === 'error' && <span className="text-red-400">Ошибка ❌</span>}
+            
+
+              <label>Язык:</label>
+              <select
+                value={language}
+                onChange={(e) => handleLanguageChange(e.target.value)}
+                className="text-black px-2 py-1 rounded"
+              >
+                {LANGUAGES.map(lang => (
+                  <option key={lang.value} value={lang.value}>
+                    {lang.label}
+                  </option>
+                ))}
+              </select>
+              
+              <button onClick={handleSave} className="bg-blue-600 px-4 py-1 rounded hover:bg-blue-700">
+                💾 Сохранить
+              </button>
+              {saveStatus === 'saving' && <span className="text-yellow-400">Сохраняется...</span>}
+              {saveStatus === 'saved' && <span className="text-green-400">Сохранено ✅</span>}
+              {saveStatus === 'error' && <span className="text-red-400">Ошибка ❌</span>}
           </div>
 
           <MonacoEditor
             height="100%"
-            defaultLanguage="typescript"
+            defaultLanguage={language}
             defaultValue="// Начните писать код..."
             theme="vs-dark"
             onMount={handleEditorMount}
