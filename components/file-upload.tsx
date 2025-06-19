@@ -3,6 +3,10 @@
 import { X } from "lucide-react";
 import Image from "next/image";
 
+import { UploadDropzone } from "@/lib/uploadthing";
+
+//import "@uploadthing/react/styles.css";
+
 interface FileUploadProps {
     onChange: (url?: string) => void;
     value: string;
@@ -39,8 +43,22 @@ export const FileUpload = ({
     }
 
     return (
-        <div>
-            Компонент загрузки файлов
-        </div>
+        <UploadDropzone 
+        endpoint={endpoint}
+        onClientUploadComplete={(res) => {
+            onChange(res?.[0].ufsUrl);
+        }}
+        onUploadError={(error: Error) => {
+            console.error("UploadThing [lib File Upload] ", error);
+        }}
+        // appearance={{
+        //     button:
+        //     "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
+        //     //container: "w-max flex-row rounded-md border-cyan-300 bg-slate-800",
+        //     allowedContent:
+        //     "flex h-8 flex-col items-center justify-center px-2 text-white",
+        // }}
+        />
+
     )
 }

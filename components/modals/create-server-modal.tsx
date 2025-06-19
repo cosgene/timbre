@@ -35,9 +35,9 @@ const formSchema = z.object({
     name: z.string().min(1, {
         message: "Необходимо задать название сервера."
     }),
-    // imageUrl: z.string().min(1, {
-    //     message: "Необходимо задать значок сервера."
-    // })
+    imageUrl: z.string().min(1, {
+        message: "Необходимо задать значок сервера."
+    })
 });
 
 export const CreateServerModal = () => {
@@ -51,7 +51,7 @@ export const CreateServerModal = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            //imageUrl: "",
+            imageUrl: "",
         }
     });
 
@@ -60,7 +60,7 @@ export const CreateServerModal = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         if(profileLoading || !profile) return;
         try {
-            const request = {"name": values.name, "userId": (profile as Profile).id}
+            const request = {"name": values.name, "imageUrl": values.imageUrl, "userId": (profile as Profile).id}
             const response = await axios.post("http://localhost:5207/api/servers", request);
             console.log(response.data);
             redirect(`/servers/${response.data.id}`);
@@ -95,7 +95,7 @@ export const CreateServerModal = () => {
                         <div className="space-y-8 px-6">
                             <div className="flex items-center justify-center text-center">
                                 {/* TODO: Загрузка изображения */}
-                                {/* <FormField
+                                <FormField
                                     control={form.control}
                                     name="imageUrl"
                                     render={({ field }) => (
@@ -109,7 +109,7 @@ export const CreateServerModal = () => {
                                             </FormControl>
                                         </FormItem>
                                     )}
-                                /> */}
+                                />
                             </div>
                             <FormField
                                 control={form.control}
