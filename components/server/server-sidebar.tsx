@@ -139,6 +139,7 @@ export const ServerSidebar = async ({
                 {!!textChannels?.length && (
                     <div className="mb-2">
                         <ServerSection 
+                            server={server}
                             sectionType="channels"
                             channelType={ChannelType.Text}
                             role={role}
@@ -159,6 +160,7 @@ export const ServerSidebar = async ({
                 {!!audioChannels?.length && (
                     <div className="mb-2">
                         <ServerSection 
+                            server={server}
                             sectionType="channels"
                             channelType={ChannelType.Voice}
                             role={role}
