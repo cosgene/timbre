@@ -22,7 +22,7 @@ export interface Profile
     imageUrl: string;
     email: string;
 
-    servers: Server[];
+    //servers: Server[];        // use get api/profiles/{profile.id}/getServers
     members: Member[];
     channels: Channel[];
 

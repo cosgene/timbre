@@ -31,7 +31,7 @@ export const ServerSection = ({
                 <ActionTooltip label="Создать канал" side="top">
                     <button 
                         className="text-zinc-500 hover:text-zinc-600 dark:text-burgundy-200 dark:hover:text-burgundy-100 transition"
-                        onClick={() => onOpen("createChannel", { channelType })}
+                        onClick={() => onOpen("createChannel", { server, channelType })}
                     >
                         <Plus className="h-4 w-4"/>
                     </button>
