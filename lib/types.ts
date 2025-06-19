@@ -42,6 +42,7 @@ export interface Server
 
     members: Member[];
     channels: Channel[];
+    messages: Message[];
 
     createdAt: Date;
     updatedAt: Date;
@@ -57,6 +58,12 @@ export interface Member
 
     serverId: string;
     server: Server;
+
+    messages: Message[];
+    directMessages: DirectMessage[];
+
+    conversationsInitiated: Conversation[];
+    conversationsReceived: Conversation[];
 
     createdAt: Date;
     updatedAt: Date;
@@ -78,7 +85,50 @@ export interface Channel
     updatedAt: Date;
 }
 
-export default class Message
+export interface Message
 {
-    // TODO
+    id: string;
+    content: string;
+
+    fileUrl?: string;
+
+    member: Member;
+    memberId: string;
+
+    channel: Channel;
+    channelId: string;
+
+    deleted: boolean;
+
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface Conversation {
+    id: string;
+
+    memberOneId: string;
+    memberOne: Member;
+
+    memberTwoId: string;
+    memberTwo: Member;
+
+    directMessages: DirectMessage[];
+}
+
+export interface DirectMessage {
+    id: string;
+    content: string;
+    fileUrl?: string;
+
+    memberId: string;
+    member: Member;
+
+    conversationId: string;
+    conversation: Conversation;
+
+    deleted: boolean;
+
+    createdAt: Date;
+    updatedAt: Date;
 }
