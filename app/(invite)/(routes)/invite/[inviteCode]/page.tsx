@@ -18,15 +18,21 @@ const InviteCodePage = async ({
 
     const profile = await initialProfile();
 
+    var server: Server;
+
     try {
         const response = await axios.post(`http://localhost:5207/api/invite/${params.inviteCode}`, {profileId: profile.id});
 
-        var server = response.data as Server;
+        server = response.data as Server;
 
-        return redirect(`/servers/${server.id}`);
+        console.log('server = ', server);
+        console.log('server id ', server.id);
+
     } catch(error) {
         console.error("On Invite Accept", error);
+        return redirect("/");
     }
+    return redirect(`/servers/${server!.id}`);
 
     // const existingServer = await db server find 
     // where inviteCode === params.inviteCode 
