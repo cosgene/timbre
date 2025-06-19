@@ -35,6 +35,8 @@ import {
     DropdownMenuSubTrigger
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { MemberRole, Server } from "@/lib/types";
+import axios from "axios";
 
 const roleIconMap = {
     "GUEST": null,
@@ -49,36 +51,38 @@ export const MembersModal = () => {
     
     const isModalOpen = isOpen && type === "members";
     // const { server } = data;
-    const member1 = {
-        profile: {
-            imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWdSHU-8rEv9nuk4BRoUFB8H_3evbCmhKbmg&s",
-            name: "Member At Members Modal",
-            email: "member1@gmail.com"
-        },
-        profileId: 1,
-        id: "1",
-        role: "MODERATOR"
-    }
+    // const member1 = {
+    //     profile: {
+    //         imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWdSHU-8rEv9nuk4BRoUFB8H_3evbCmhKbmg&s",
+    //         name: "Member At Members Modal",
+    //         email: "member1@gmail.com"
+    //     },
+    //     profileId: 1,
+    //     id: "1",
+    //     role: "MODERATOR"
+    // }
 
-        const member2 = {
-        profile: {
-            imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRthh_BFzHQBfZI67CR6jkPgJ-vRPdUW6stKw&s",
-            name: "Member2 At Members Modal",
-            email: "member2@yandex.ru",
-        },
-        profileId: 2,
-        id: "2",
-        role: "ADMIN"
-    }
+    //     const member2 = {
+    //     profile: {
+    //         imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRthh_BFzHQBfZI67CR6jkPgJ-vRPdUW6stKw&s",
+    //         name: "Member2 At Members Modal",
+    //         email: "member2@yandex.ru",
+    //     },
+    //     profileId: 2,
+    //     id: "2",
+    //     role: "ADMIN"
+    // }
 
-    const server = {
-        name: "My Server At Members Modal",
-        profileId: 2,
-        members: [
-            member1,
-            member2
-        ]
-    }
+    // const server = {
+    //     name: "My Server At Members Modal",
+    //     profileId: 2,
+    //     members: [
+    //         member1,
+    //         member2
+    //     ]
+    // }
+
+    const server = data.server as Server;
 
     function pluralize(count: number, forms: [string, string, string]) {
         const mod10 = count % 10;
@@ -92,8 +96,8 @@ export const MembersModal = () => {
     const onKick = async (memberId: string) => {
         try {
             setLoadingId(memberId);
-            // TODO: здесь запрос, выгоняющий пользователя с сервера
-            // const response = await axios.delete(url);
+            
+            const response = await axios.delete(`http://localhost:5207/api/servers/${server.id}/members/${memberId}`);
             router.refresh();
             // onOpen("members", { server: response.data })
         } catch (error) {
@@ -106,12 +110,12 @@ export const MembersModal = () => {
     const onRoleChange = async (memberId: string, role: string /* TODO: MemberRole datatype? */) => {
         try {
             setLoadingId(memberId);
-            // TODO: здесь запрос меняющий роль
-            // const response = await axios.patch(url, { role });
+
+            const response = await axios.put(`http://localhost:5207/api/servers/${server.id}/members/${memberId}`, {role: role});
             router.refresh();
             // onOpen("members", { server: response.data })
         } catch (error) {
-            console.log(error);
+            console.error("Role Change (Members Modal)", error);
         } finally {
             setLoadingId("");
         }
@@ -162,20 +166,20 @@ export const MembersModal = () => {
                                                 <DropdownMenuPortal>
                                                     <DropdownMenuSubContent>
                                                         <DropdownMenuItem 
-                                                            onClick={() => onRoleChange(member.id, "GUEST")}
+                                                            onClick={() => onRoleChange(member.id, MemberRole.GUEST)}
                                                         >
                                                             <Shield className="h-4 w-4"/>
                                                             Гость
-                                                            {member.role === "GUEST" && (
+                                                            {member.role === MemberRole.GUEST && (
                                                                 <Check className="h-4 w-4 ml-auto"/>
                                                             )}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem 
-                                                            onClick={() => onRoleChange(member.id, "MODERATOR")}
+                                                            onClick={() => onRoleChange(member.id, MemberRole.MODERATOR)}
                                                         >
                                                             <ShieldCheck className="h-4 w-4"/>
                                                             Модератор
-                                                            {member.role === "MODERATOR" && (
+                                                            {member.role === MemberRole.MODERATOR && (
                                                                 <Check className="h-4 w-4 ml-auto"/>
                                                             )}
                                                         </DropdownMenuItem>

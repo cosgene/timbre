@@ -11,7 +11,7 @@ import { auth } from '@clerk/nextjs/server';
 
 import axios from 'axios';
 import { initialProfile } from "@/lib/initial-profile.server";
-import { Profile, Server } from "@/lib/types";
+import { Member, Profile, Server } from "@/lib/types";
 import { timeStamp } from "console";
 
 export const NavigationSidebar = async () => {
@@ -34,8 +34,10 @@ export const NavigationSidebar = async () => {
 
     //var servers: Server[] = [{"id": "0", "name": "Default Server", "imageUrl": "/", "inviteCode": "", "profileId": "", "profile": null,}];
     
-    const profile = await initialProfile();
-    var servers: Server[] = profile.servers;
+    const profile = (await initialProfile()) as Profile;
+    
+    var serversResponse = await axios.get(`http://localhost:5207/api/profiles/${profile.id}/getServers`);
+    var servers: Server[] = serversResponse.data as Server[];
     console.log(servers);
 
     // try {

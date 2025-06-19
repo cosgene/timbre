@@ -14,7 +14,7 @@ public class Profile
     public string ImageURL { get; set; } = "/";
     public string Email { get; set; } = string.Empty;
 
-    public List<Server> Servers { get; set; } = new();
+    //public List<Server> Servers { get; set; } = new();
     public List<Member> Members { get; set; } = new();
     public List<Channel> Channels { get; set; } = new();
 
@@ -34,6 +34,7 @@ public class Member
     public string Role { get; set; } = "Гость";
     public required Profile Profile { get; set; }
     public Guid ProfileId { get; set; }
+    public Server Server { get; set; }
     public Guid ServerId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
@@ -108,6 +109,15 @@ public class EditChannelRequest
 public class EditProfileRequest
 {
     public string Name { get; set; } = string.Empty;
+}
+public class EditMemberRequest
+{
+    public string Role { get; set; } = "Гость";
+}
+
+public class JoinInvitationRequest
+{
+    public Guid profileId { get; set; }
 }
 
 public class CreateMessageRequest

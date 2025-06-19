@@ -1,3 +1,6 @@
+import { initialProfile } from "@/lib/initial-profile.server";
+import { Server } from "@/lib/types";
+import axios from "axios";
 import { redirect } from "next/navigation";
 
 interface InviteCodePageProps {
@@ -9,15 +12,20 @@ interface InviteCodePageProps {
 const InviteCodePage = async ({
     params
 }: InviteCodePageProps) => {
-    // TODO: fetch current profile, check if the user in the server, add user by invite link
-    // const profile = await currentProfile();
-
-    // if (!profile) {
-    //     redirect to sign in
-    // }
-
     if (!params.inviteCode) {
         return redirect("/");
+    }
+
+    const profile = await initialProfile();
+
+    try {
+        const response = await axios.post(`http://localhost:5207/api/invite/${params.inviteCode}`, {profileId: profile.id});
+
+        var server = response.data as Server;
+
+        return redirect(`/servers/${server.id}`);
+    } catch(error) {
+        console.error("On Invite Accept", error);
     }
 
     // const existingServer = await db server find 

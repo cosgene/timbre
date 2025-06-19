@@ -53,6 +53,7 @@ public class ServersController : ControllerBase
                 Role = "Админ",
                 Profile = profile,
                 //ProfileId = request.UserId,
+                Server = server,
                 ServerId = server.Id,
 
                 CreatedAt = DateTime.UtcNow,
@@ -60,8 +61,10 @@ public class ServersController : ControllerBase
             };
 
             profile.Members.Add(member);
-            profile.Servers.Add(server);
+            //profile.Servers.Add(server);
             server.Members.Add(member);
+
+            _context.Members.Add(member);
 
             // Сохранение в БД
             _context.Servers.Add(server);
@@ -117,17 +120,17 @@ public class ServersController : ControllerBase
         if (server == null) return NotFound("Server not found.");
 
         var profile = _context.Profiles
-                        .Include(s => s.Servers)
+                        //.Include(s => s.Servers)
                         .Include(s => s.Members)
                         .FirstOrDefault(s => s.Id == profileId);
 
         if (profile == null) return NotFound("Profile not found.");
 
-        var serverToRemove = profile.Servers.FirstOrDefault(s => s.Id == id);
-        if (serverToRemove != null)
-        {
-            profile.Servers.Remove(serverToRemove);
-        }
+        // var serverToRemove = profile.Servers.FirstOrDefault(s => s.Id == id);
+        // if (serverToRemove != null)
+        // {
+        //     profile.Servers.Remove(serverToRemove);
+        // }
 
         var membersToRemove = profile.Members.Where(s => s.ServerId == id);
         _context.Members.RemoveRange(membersToRemove);
@@ -153,15 +156,15 @@ public class ServersController : ControllerBase
         var membersToRemove = _context.Members.Where(m => m.ServerId == id);
         _context.Members.RemoveRange(membersToRemove);
 
-        var profiles = await _context.Profiles.Include(p => p.Servers).ToListAsync();
-        foreach (var profile in profiles)
-        {
-            var serverToRemove = profile.Servers.FirstOrDefault(s => s.Id == id);
-            if (serverToRemove != null)
-            {
-                profile.Servers.Remove(serverToRemove);
-            }
-        }
+        // var profiles = await _context.Profiles.Include(p => p.Servers).ToListAsync();
+        // foreach (var profile in profiles)
+        // {
+        //     var serverToRemove = profile.Servers.FirstOrDefault(s => s.Id == id);
+        //     if (serverToRemove != null)
+        //     {
+        //         profile.Servers.Remove(serverToRemove);
+        //     }
+        // }
 
         // Удаляем сам сервер
         _context.Servers.Remove(server);
@@ -289,16 +292,60 @@ public class ServersController : ControllerBase
     public async Task<IActionResult> EditChannel(Guid serverId, Guid channelId, EditChannelRequest request)
     {
         var server = await _context.Servers
+            .Include(s => s.Channels)
             .FirstOrDefaultAsync(s => s.Id == serverId);
 
         if (server == null) return NotFound("Server " + serverId + " not found.");
 
-        var channel = await _context.Channels.FirstOrDefaultAsync(s => s.Id == channelId);
+        var channel = server.Channels.FirstOrDefault(s => s.Id == channelId);
 
         if (channel == null) return NotFound("Channel " + channelId + " not found.");
 
         channel.Name = request.Name;
         channel.Type = request.Type;
+
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [HttpPut("{serverId}/members/{memberId}")]
+    public async Task<IActionResult> EditMember(Guid serverId, Guid memberId, EditMemberRequest request)
+    {
+        var server = await _context.Servers
+            .Include(s => s.Members)
+            .FirstOrDefaultAsync(s => s.Id == serverId);
+
+        if (server == null) return NotFound("Server " + serverId + " not found.");
+
+        var member = server.Members.FirstOrDefault(s => s.Id == memberId);
+
+        if (member == null) return NotFound("Member " + memberId + " not found");
+        member.Role = request.Role;
+
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [HttpDelete("{serverId}/members/{memberId}")]
+    public async Task<IActionResult> RemoveMember(Guid serverId, Guid memberId)
+    {
+        var server = await _context.Servers
+            .Include(s => s.Members)
+            .FirstOrDefaultAsync(s => s.Id == serverId);
+
+        if (server == null) return NotFound("Server " + serverId + " not found.");
+
+        var member = server.Members.FirstOrDefault(s => s.Id == memberId);
+
+        if (member == null) return NotFound("Member " + memberId + " not found");
+
+        server.Members.Remove(member);
+        _context.Members.Remove(member);
+
+        member.Profile.Members.Remove(member);
+        //member.Profile.Servers.Remove(server);
 
         await _context.SaveChangesAsync();
 

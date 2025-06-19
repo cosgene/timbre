@@ -26,7 +26,7 @@ export const InviteModal = () => {
     const [ copied, setCopied ] = useState(false);
     const [ isLoading, setIsLoading ] = useState(false);
 
-    const inviteUrl = `${origin}/invite/${server?.name}`; // TODO: change to server?.inviteCode when data is available
+    const inviteUrl = `${origin}/invite/${server?.inviteCode}`; // TODO: change to server?.inviteCode when data is available
 
     const onCopy = () => {
         navigator.clipboard.writeText(inviteUrl);

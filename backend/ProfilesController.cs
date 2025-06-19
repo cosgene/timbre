@@ -51,7 +51,7 @@ public class ProfilesController : ControllerBase
     public async Task<ActionResult<Profile>> GetProfile(Guid id)
     {
         var profile = await _context.Profiles
-            .Include(s => s.Servers)
+            //.Include(s => s.Servers)
             .FirstOrDefaultAsync(s => s.Id == id);
 
         if (profile == null) return NotFound();
@@ -62,11 +62,44 @@ public class ProfilesController : ControllerBase
     public async Task<ActionResult<Profile>> GetProfileFromClerk(string clerkId)
     {
         var profile = await _context.Profiles
-            .Include(s => s.Servers)
+            //.Include(s => s.Servers)
             .FirstOrDefaultAsync(s => s.UserId == clerkId);
 
         if (profile == null) return NotFound();
+
+        // // I will burn in hell for my sins
+        // // but it doesnt work otherwise
+        // var dbServers = await _context.Servers.ToListAsync();
+        // var servers = new List<Server>();
+        // foreach (var member in profile.Members)
+        // {
+        //     var a = dbServers.FirstOrDefault(s => s.Id == member.ServerId);
+        //     if (a == null) continue;
+        //     servers.Add(a);
+        // }
+        // profile.Servers = servers;
+
         return profile;
+    }
+
+    [HttpGet("{id}/getServers")]
+    public async Task<ActionResult<List<Server>>> GetProfileServers(Guid id)
+    {
+        var profile = await _context.Profiles
+            .Include(s => s.Members)
+                .ThenInclude(s => s.Server)
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (profile == null) return NotFound();
+
+        var servers = profile.Members.Select(m => m.Server).ToList();
+        Console.WriteLine("GetProfileServers " + servers.Count);
+        foreach (var a in servers)
+        {
+            Console.WriteLine("Server " + a.Name);
+        }
+
+        return servers;
     }
 
     [HttpPut("{profileId}")]
