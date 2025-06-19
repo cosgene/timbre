@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useReducer } from "react";
 
 import {
     Dialog,
@@ -28,6 +28,7 @@ import { useModal } from "@/hooks/use-modal-store";
 
 import axios from 'axios';
 import { Server } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 
 const formSchema = z.object({
@@ -40,6 +41,7 @@ const formSchema = z.object({
 });
 
 export const EditServerModal = () => {
+    const router = useRouter();
     const { isOpen, onClose, type, data } = useModal();
     
     const isModalOpen = isOpen && type === "editServer";
@@ -72,6 +74,7 @@ export const EditServerModal = () => {
             console.error('[Edit Server (Edit Server Modal)] ', error);
         }
 
+        router.refresh();
         console.log(values);
         onClose();
     }

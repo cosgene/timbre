@@ -29,7 +29,7 @@ import axios from 'axios';
 //import { initialProfile } from "@/lib/initial-profile";
 import { useInitialProfile } from "@/lib/use-initial-profile";
 import { Profile } from "@/lib/types";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -43,6 +43,7 @@ const formSchema = z.object({
 export const CreateServerModal = () => {
     const { isOpen, onClose, type } = useModal();
     const { profile, loading: profileLoading } = useInitialProfile();
+    const router = useRouter();
     
     const isModalOpen = isOpen && type === "createServer";
 
@@ -67,6 +68,7 @@ export const CreateServerModal = () => {
             console.error('[Create Server (Create Server Modal)] ', error);
         }
 
+        router.refresh();
         // TODO: здесь логика при отправке формы
         // console.log(values);
         onClose();

@@ -116,11 +116,11 @@ public class ServersController : ControllerBase
 
         if (server == null) return NotFound("Server not found.");
 
-        var profile =   _context.Profiles
+        var profile = _context.Profiles
                         .Include(s => s.Servers)
                         .Include(s => s.Members)
                         .FirstOrDefault(s => s.Id == profileId);
-        
+
         if (profile == null) return NotFound("Profile not found.");
 
         var serverToRemove = profile.Servers.FirstOrDefault(s => s.Id == id);
@@ -162,7 +162,7 @@ public class ServersController : ControllerBase
                 profile.Servers.Remove(serverToRemove);
             }
         }
-        
+
         // Удаляем сам сервер
         _context.Servers.Remove(server);
 
@@ -251,5 +251,57 @@ public class ServersController : ControllerBase
         if (server == null) return NotFound();
 
         return server.Channels.ToList();
+    }
+
+    [HttpDelete("{serverId}/channels/{channelId}")]
+    public async Task<IActionResult> DeleteChannel(Guid serverId, Guid channelId)
+    {
+        var server = await _context.Servers
+                    .Include(s => s.Channels)
+                    .FirstOrDefaultAsync(s => s.Id == serverId);
+
+        if (server == null) return NotFound("Server " + serverId + " not found.");
+
+        var channelToRemove = server.Channels.FirstOrDefault(s => s.Id == channelId);
+        if (channelToRemove == null) return NotFound("Channel " + channelId + " not found.");
+
+        server.Channels.Remove(channelToRemove);
+
+        var profiles = await _context.Profiles.Include(p => p.Channels).ToListAsync();
+        foreach (var profile in profiles)
+        {
+            var channelInProfile = profile.Channels.FirstOrDefault(s => s.Id == channelId);
+            if (channelInProfile != null)
+            {
+                profile.Channels.Remove(channelInProfile);
+            }
+        }
+
+        _context.Channels.Remove(channelToRemove);
+
+        // Сохраняем изменения
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpPut("{serverId}/channels/{channelId}")]
+    public async Task<IActionResult> EditChannel(Guid serverId, Guid channelId, EditChannelRequest request)
+    {
+        var server = await _context.Servers
+            .FirstOrDefaultAsync(s => s.Id == serverId);
+
+        if (server == null) return NotFound("Server " + serverId + " not found.");
+
+        var channel = await _context.Channels.FirstOrDefaultAsync(s => s.Id == channelId);
+
+        if (channel == null) return NotFound("Channel " + channelId + " not found.");
+
+        channel.Name = request.Name;
+        channel.Type = request.Type;
+
+        await _context.SaveChangesAsync();
+
+        return Ok();
     }
 }

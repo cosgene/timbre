@@ -35,6 +35,7 @@ import {
 import axios from 'axios';
 import { useInitialProfile } from "@/lib/use-initial-profile";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -49,6 +50,8 @@ const formSchema = z.object({
 });
 
 export const CreateChannelModal = () => {
+    const router = useRouter();
+    
     const { isOpen, onClose, type, data } = useModal();
     const { profile, loading: profileLoading } = useInitialProfile();
 
@@ -86,6 +89,7 @@ export const CreateChannelModal = () => {
             console.error('[Create Channel (Create Channel Modal)] ', error);
         }
 
+        router.refresh();
         // TODO: здесь логика при отправке формы
         console.log(values);
         onClose();

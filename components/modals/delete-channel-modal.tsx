@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
+import { Channel, Server } from "@/lib/types";
 
 
 export const DeleteChannelModal = () => {
@@ -38,6 +39,9 @@ export const DeleteChannelModal = () => {
             //     }
             // })
             // axios.delete(url);
+            
+            await axios.delete(`http://localhost:5207/api/servers/${(server as Server).id}/channels/${(channel as Channel).id}`);
+
             onClose();
             router.refresh();
             router.push(`/servers/${server?.id}`);

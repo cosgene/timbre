@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
-import { ChannelType, Profile, Server } from "@/lib/types";
+import { Channel, ChannelType, Profile, Server } from "@/lib/types";
 
 import {
     Dialog,
@@ -87,6 +87,10 @@ export const EditChannelModal = () => {
             //     }
             // })
             // await axios.patch(url, values);
+
+            const response = await axios.put(`http://localhost:5207/api/servers/${(server as Server).id}/channels/${(channel as Channel).id}`, values);
+            console.log(response.data);
+
             form.reset();
             router.refresh();
             onClose();

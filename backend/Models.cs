@@ -99,6 +99,12 @@ public class EditServerRequest
     public string ImageUrl { get; set; } = string.Empty;
 }
 
+public class EditChannelRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+}
+
 public class CreateMessageRequest
 {
     public Guid OwnerId { get; set; }
