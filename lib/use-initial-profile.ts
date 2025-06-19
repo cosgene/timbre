@@ -17,6 +17,15 @@ export const useInitialProfile = () => {
         try {
             const response = await axios.get(`http://localhost:5207/api/profiles/fromClerk/${user.id}`);
             if (response.data) {
+                if(user.username != response.data.name) {
+                    const values = {
+                        name: user.username
+                    };
+
+                    const newProfile = await axios.put(`http://localhost:5207/api/profiles/${response.data.id}`, values);
+                    setProfile(newProfile.data);
+                }
+
                 setProfile(response.data);
                 setLoading(false);
                 return;
@@ -26,7 +35,7 @@ export const useInitialProfile = () => {
         }
         
         try{
-            const name = (user.firstName == null) ? "Default Name" : user.firstName;
+            const name = (user.username == null) ? "Default Name" : user.username;
 
 
             const values = {

@@ -68,4 +68,19 @@ public class ProfilesController : ControllerBase
         if (profile == null) return NotFound();
         return profile;
     }
+
+    [HttpPut("{profileId}")]
+    public async Task<IActionResult> EditProfile(Guid profileId, EditChannelRequest request)
+    {
+        var profile = await _context.Profiles
+            .FirstOrDefaultAsync(s => s.Id == profileId);
+
+        if (profile == null) return NotFound("Profile " + profileId + " not found.");
+
+        profile.Name = request.Name;
+
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
 }

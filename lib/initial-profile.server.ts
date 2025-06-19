@@ -20,7 +20,7 @@ export const initialProfile = async () => {
   try {
     const values = {
       clerkId: user.id,
-      name: user.firstName,
+      name: user.username,
       imageURL: user.imageUrl,
       email: user.primaryEmailAddress?.emailAddress,
     };
