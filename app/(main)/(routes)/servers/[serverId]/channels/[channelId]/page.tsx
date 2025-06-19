@@ -35,7 +35,7 @@ const ChannelIdPage = async ({
     const member = server.members.find(member => member.profileId === profile.id);
 
     if (!channel || !member) {
-        redirect('/');
+        return redirect('/');
     }
 
     return ( 
