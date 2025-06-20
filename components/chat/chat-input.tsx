@@ -15,10 +15,13 @@ import {
     FormItem,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useSignalR } from "../signalr-context";
+import { Member } from "@/lib/types";
 
 
 
 interface ChatInputProps {
+    member: Member;
     apiUrl: string;
     query: Record<string, any>; // 
     name: string;
@@ -30,12 +33,14 @@ const formSchema = z.object({
 });
 
 export const ChatInput = ({
+    member,
     apiUrl,
-    query,
+    query: { serverId, channelId },
     name,
     type
 }: ChatInputProps) => {
     const router = useRouter();
+    const { connection, isConnected } = useSignalR();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -48,17 +53,23 @@ export const ChatInput = ({
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            // TODO: отправить сообщение в обработчик
-            // const url = qs.stringify({
-            //     url: apiUrl,
-            //     query: query
-            // });
-            // await axios.post(url, values);
-            console.log(values);
+            if (!connection || !isConnected) {
+                console.warn("SignalR not connected");
+                return;
+            }
+
+            // Отправка через SignalR
+            await connection.invoke("SendMessage", 
+                serverId,
+                channelId,
+                member,
+                values.content,
+            );
+
             form.reset();
-            router.refresh();
+            //router.refresh();
         } catch (error) {
-            console.log("Message sending error (@/components/chat/chat-input.tsx)", error)
+            console.error("Message sending error (ChatInput):", error);
         }
     }
 

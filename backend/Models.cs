@@ -125,16 +125,57 @@ public class CreateMessageRequest
     public Guid OwnerId { get; set; }
     public Guid ServerId { get; set; }
     public Guid ChannelId { get; set; }
-    public string Text { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
 }
 
 public class Message
 {
     public Guid Id { get; set; }
-    public Guid OwnerId { get; set; }
-    public Guid ServerId { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public string FileUrl { get; set; }
+    public Member Member { get; set; }
+    public Guid MemberId { get; set; }
+    public Channel Channel { get; set; }
     public Guid ChannelId { get; set; }
-    public string Text { get; set; } = string.Empty;
+    public bool Deleted { get; set; } = false;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    // public Member Member { get; set; }
+    // public Guid OwnerId { get; set; }
+    // public Guid ServerId { get; set; }
+    // public Guid ChannelId { get; set; }
+    // public string Text { get; set; } = string.Empty;
+}
+
+public class DirectMessage
+{
+    public Guid Id { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public string FileUrl { get; set; }
+    public Member Member { get; set; }
+    public Guid MemberId { get; set; }
+    public Conversation Conversation { get; set; }
+    public Guid ConversationId { get; set; }
+    public bool Deleted { get; set; } = false;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    // public Member Member { get; set; }
+    // public Guid OwnerId { get; set; }
+    // public Guid ServerId { get; set; }
+    // public Guid ChannelId { get; set; }
+    // public string Text { get; set; } = string.Empty;
+}
+
+public class Conversation
+{
+    public Guid Id { get; set; }
+    public Member MemberOne { get; set; }
+    public Guid MemberOneId { get; set; }
+    public Member MemberTwo { get; set; }
+    public Guid MemberTwoId { get; set; }
+    public List<DirectMessage> DirectMessages { get; set; } = [];
 }
 
 public class CreateCodeRequest

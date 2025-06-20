@@ -14,20 +14,28 @@ import {
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
+import { useSignalR } from "../signalr-context";
 
 
 export const DeleteMessageModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     
     const isModalOpen = isOpen && type === "deleteMessage";
-    const { apiUrl, query } = data;
+    const { query } = data;
 
     const [ isLoading, setIsLoading ] = useState(false);
 
     const onClick = async () => {
         try {
+            if(!query || !query.connection) return;
+
             setIsLoading(true);
-            // TODO: удаление сообщения
+
+            await query.connection.invoke("DeleteMessage", 
+                query!.serverId,
+                query!.channelId,
+                query!.id,
+            );
 
             onClose();
         } catch(error) {

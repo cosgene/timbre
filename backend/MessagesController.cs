@@ -30,15 +30,22 @@ public class MessagesController : ControllerBase
     {
         try
         {
+            var member = _context.Members
+                .FirstOrDefault(s => s.Id == request.OwnerId);
+
+            if (member == null) return NotFound("Member " + request.OwnerId + " not found.");
 
             // Создание сервера
             var message = new Message
             {
                 Id = Guid.NewGuid(),
-                OwnerId = request.OwnerId,
-                ServerId = request.ServerId,
+                Member = member,
+                MemberId = member.Id,
                 ChannelId = request.ChannelId,
-                Text = request.Text,
+                Content = request.Content,
+
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             // Сохранение в БД
@@ -55,14 +62,17 @@ public class MessagesController : ControllerBase
         }
     }
 
-    [HttpGet("{serverId}/{channelId}")]
-    public async Task<ActionResult<List<Message>>> GetChannelMessages(Guid serverId, Guid channelId)
-    {
-        var msgs = await _context.Messages
-                    .Where(s => s.ServerId == serverId && s.ChannelId == channelId)
-                    .ToListAsync();
+    [HttpGet("channel/{channelId}")]
+    public async Task<ActionResult<List<Message>>> GetChannelMessages(Guid channelId)
+{
+    var messages = await _context.Messages
+        .Include(m => m.Member)
+            .ThenInclude(member => member.Profile)
+        .Where(m => m.ChannelId == channelId && m.Member.Profile != null)
+        .OrderBy(m => m.CreatedAt)
+        .ToListAsync();
 
-        return msgs;
-    }
+    return messages;
+}
 }
 

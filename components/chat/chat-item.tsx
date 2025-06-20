@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
+import { useSignalR } from "../signalr-context";
 
 interface ChatItemProps {
     id: string;
@@ -62,6 +63,7 @@ export const ChatItem = ({
 }: ChatItemProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const { onOpen } = useModal();
+    const { connection, isConnected } = useSignalR();
 
     useEffect(() => {
         const handleKeyDown = (event: any) => {
@@ -86,7 +88,14 @@ export const ChatItem = ({
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            // TODO: изменение сообщения
+            if(!connection || !isConnected) return;
+
+            await connection.invoke("EditMessage", 
+                socketQuery.serverId,
+                socketQuery.channelId,
+                id,
+                values.content,
+            );
 
             form.reset();
             setIsEditing(false);
@@ -222,8 +231,7 @@ export const ChatItem = ({
                     <ActionTooltip label="Удалить">
                         <Trash 
                             onClick={() => onOpen("deleteMessage", {
-                                apiUrl: `${socketUrl}/${id}`,
-                                query: socketQuery,
+                                query: {serverId: socketQuery.serverId, channelId: socketQuery.channelId, id: id, connection: connection},
                             })}
                             className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 dark:text-burgundy-300 hover:text-zinc-600 dark:hover:text-burgundy-300 transition"
                         />
