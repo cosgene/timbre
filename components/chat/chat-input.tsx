@@ -75,13 +75,13 @@ export const ChatInput = ({
                                     <button 
                                         type="button"
                                         onClick={() => {}}
-                                        className="absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-burgundy-500 hover:bg-zinc-600 dark:hover:bg-burgundy-400 transition rounded-full p-1 flex items-center justify-center"
+                                        className="absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-burgundy-400 hover:bg-zinc-600 dark:hover:bg-burgundy-300 transition rounded-full p-1 flex items-center justify-center"
                                     >
                                         <Plus className="text-white dark:text-burgundy-600"/>
                                     </button>
                                     <Input 
                                         disabled={isLoading}
-                                        className="px-14 py-6 bg-zinc-200/90 dark:bg-burgundy-600/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-burgundy-100"
+                                        className="px-14 py-6 bg-zinc-200/90 dark:bg-burgundy-600/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-burgundy-100 placeholder:text-burgundy-200"
                                         placeholder={`Написать ${type === "conversation" ? name : "в #" + name}`}
                                         {...field}
                                     />
