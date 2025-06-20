@@ -1,3 +1,5 @@
+//"use client"
+
 import {useState} from 'react';
 import useVoiceChat from '../hooks/use-voice-chat';
 

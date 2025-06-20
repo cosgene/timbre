@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { Hash, Mic, ShieldAlert, ShieldCheck } from "lucide-react";
+import { Hash, Mic, ShieldAlert, ShieldCheck, CodeXml } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -22,7 +22,8 @@ interface ServerSidebarProps {
 
 const iconMap = {
     [ChannelType.Text]: <Hash className="mr-2 h-4 w-4"/>,
-    [ChannelType.Voice]: <Mic className="mr-2 h-4 w-4"/>
+    [ChannelType.Voice]: <Mic className="mr-2 h-4 w-4"/>,
+    [ChannelType.Code]: <CodeXml className="mr-2 h-4 w-4"/>
 }
 
 const roleIconMap = {
@@ -82,6 +83,7 @@ export const ServerSidebar = async ({
     //console.log("type " + server.channels[0].type);
     var textChannels = server.channels.filter(channel => channel.type === ChannelType.Text);
     var audioChannels = server.channels.filter(channel => channel.type === ChannelType.Voice);
+    var codeChannels = server.channels.filter(channel => channel.type === ChannelType.Code);
     console.log("textchannels " + textChannels.length);
 
     var role = MemberRole.GUEST;
@@ -119,6 +121,15 @@ export const ServerSidebar = async ({
                             label: "Голосовые каналы",
                             type: "channel",
                             data: audioChannels?.map((channel) => ({
+                                id: channel.id,
+                                name: channel.name,
+                                icon: iconMap[channel.type],
+                            }))
+                        },
+                        {
+                            label: "Лайв-кодинг",
+                            type: "channel",
+                            data: codeChannels?.map((channel) => ({
                                 id: channel.id,
                                 name: channel.name,
                                 icon: iconMap[channel.type],
@@ -168,6 +179,27 @@ export const ServerSidebar = async ({
                         />
                         <div className="space-y-[2px]">
                             {audioChannels.map((channel) => (
+                                <ServerChannel 
+                                    key={channel.id}
+                                    channel={channel}
+                                    role={role}
+                                    server={server}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {!!codeChannels?.length && (
+                    <div className="mb-2">
+                        <ServerSection 
+                            server={server}
+                            sectionType="channels"
+                            channelType={ChannelType.Code}
+                            role={role}
+                            label="Лайв-кодинг"
+                        />
+                        <div className="space-y-[2px]">
+                            {codeChannels.map((channel) => (
                                 <ServerChannel 
                                     key={channel.id}
                                     channel={channel}

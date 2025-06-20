@@ -5,9 +5,12 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
 import { initialProfile } from "@/lib/initial-profile.server";
-import { Server } from "@/lib/types";
+import { ChannelType, Server } from "@/lib/types";
 
 import { SignalRProvider } from "@/components/signalr-context";
+import VoiceChat from "@/components/voice-chat";
+import { MediaRoom } from "@/components/media-room";
+import CodeSessionEditor from "@/components/editor/monaco-editor";
 
 interface ChannelIdPageProps {
     params: {
@@ -43,8 +46,8 @@ const ChannelIdPage = async ({
         return redirect('/');
     }
 
-    return ( 
-        <SignalRProvider
+    return (
+        (channel.type == ChannelType.Text && <SignalRProvider
         serverId={channel.serverId}
         channelId={channel.id}
         >
@@ -80,7 +83,17 @@ const ChannelIdPage = async ({
                     }}
                 />
             </div>
-        </SignalRProvider>
+        </SignalRProvider>) || 
+        ( channel.type == ChannelType.Voice && 
+            <MediaRoom 
+                chatId={params.channelId}
+                video={false}
+                audio={true}
+            />
+         ) || 
+         ( channel.type == ChannelType.Code && 
+            <CodeSessionEditor serverId={params.serverId} channelId={params.channelId} />
+         )
      );
 }
  

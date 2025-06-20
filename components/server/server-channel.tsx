@@ -7,7 +7,7 @@ import {
     Server 
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Edit, Hash, Lock, Mic, Trash } from "lucide-react";
+import { CodeXml, Edit, Hash, Lock, Mic, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { ActionTooltip } from "@/components/action-tooltip";
 import { ModalType, useModal } from "@/hooks/use-modal-store";
@@ -21,6 +21,7 @@ interface ServerChannelProps {
 const iconMap = {
     [ChannelType.Text]: Hash,
     [ChannelType.Voice]: Mic,
+    [ChannelType.Code]: CodeXml,
 }
 
 export const ServerChannel = ({
